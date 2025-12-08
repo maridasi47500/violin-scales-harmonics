@@ -137,16 +137,30 @@ class NoteMap
   end
 
   # --- Scale generator ---
-  def scale(start_note, intervals)
-    result = [start_note]
-    current = @map[start_note]
+  def scale(start_note, intervals, doublestop=0)
 
-    intervals.each do |step|
+    current = @map[start_note]
+    if doublestop != 0
+    
+    double = @reverse_map[current+doublestop]
+    result = ["<#{start_note} #{double}>"]
+    else
+    result = ["#{start_note}"]
+    end
+
+    currentscale={}
+    intervals.each.with_index do |step,i|
       current += step
       #p current
       #p step
       #p (@reverse_map[current] || current.to_s)
-      result << (@reverse_map[current] || current.to_s)
+      currentscale[current]=@reverse_map[current]
+      somenote=(@reverse_map[current] || current.to_s)
+      double = @reverse_map[current+doublestop]
+      result << "<#{(@reverse_map[current] || current.to_s)} #{double}>"
+      else
+      result << "#{(@reverse_map[current] || current.to_s)}"
+      end
     end
     #p result
     result << "\\break "
@@ -158,11 +172,38 @@ end
 
 # --- Example usage ---
 note_map = NoteMap.new
-def hey(x)
-  x.reverse.each do |y|
-    x << -(y)
+def hi(x, octave=0)
+  z=x
+  if octave > 0
+    z = z * (octave + 1)
+    z.reverse.each do |y|
+      z << -(y)
+    end
+  else
+    z.reverse[..-1].each do |y|
+      z << -(y)
+    end
   end
-  x
+  p z
+
+  z
+
+end
+def hey(x, octave=0)
+  z=x
+  if octave > 0
+    z = z * (octave + 1)
+    z.reverse.each do |y|
+      z << -(y)
+    end
+  else
+    z.reverse.each do |y|
+      z << -(y)
+    end
+  end
+  p z
+
+  z
 
 end
 
@@ -193,8 +234,98 @@ hello << note_map.scale(mynote, pattern).join(" ")
 pattern = hey([4, -2, 3, -1, 3, -2, 4, -2, 4, -2, 3])
 hello << note_map.scale(mynote, pattern).join(" ")
 
-hello << note_map.scale(mynote, chromatic_pattern).join(" ")
+hello << note_map.scale(mynote, hey(chromatic_pattern)).join(" ")
 end
+mynote=firstnote
+chromatic_pattern = [1] * 12
+
+major_pattern = hey([2,2,1,2,2,2,1], 2)
+hello << note_map.scale(mynote, major_pattern).join(" ")
+pattern = hey([3,4, 5], 2)
+hello << note_map.scale(mynote, pattern).join(" ")
+pattern = hey([4,3, 5], 2)
+hello << note_map.scale(mynote, pattern).join(" ")
+pattern = hey([4,5, 3], 2)
+hello << note_map.scale(mynote, pattern).join(" ")
+pattern = hey([5,4, 3], 2)
+hello << note_map.scale(mynote, pattern).join(" ")
+pattern = hey([5, 3, 4], 2)
+hello << note_map.scale(mynote, pattern).join(" ")
+pattern = hey([3, 3, 3, 3], 2)
+hello << note_map.scale(mynote, pattern).join(" ")
+pattern = hey([4, 3, 3, 2], 2)
+hello << note_map.scale(mynote, pattern).join(" ")
+pattern = hey([4, -2, 3, -1, 3, -2, 4, -2, 4, -2, 3], 2)
+hello << note_map.scale(mynote, pattern).join(" ")
+
+hello << note_map.scale(mynote, hey(chromatic_pattern, 2)).join(" ")
+pattern = hey([4, -2, 3, -1, 3, -2, 4, -2, 4, -2, 3, -1, 3, -2, 2], 0)
+hello << note_map.scale(mynote, pattern, doublestop=4).join(" ")
+pattern = hey([4, -2, 3, -1, 3, -2, 4, -2, 4, -2, 3, -1, 3, -2], 1)
+hello << note_map.scale(mynote, pattern, doublestop=4).join(" ")
+chromatic_pattern = [1] * 12
+pattern = hey(chromatic_pattern)
+hello << note_map.scale(mynote, pattern, doublestop=4).join(" ")
+chromatic_pattern = [1] * 12
+pattern = hey(chromatic_pattern)
+hello << note_map.scale(mynote+"'", pattern, doublestop=4).join(" ")
+pattern = hey([4, -2, 3, -1, 3, -2, 4, -2, 4, -2, 3, -1, 3, -2, 2], 0)
+hello << note_map.scale(mynote, pattern, doublestop=-8).join(" ")
+pattern = hey([4, -2, 3, -1, 3, -2, 4, -2, 4, -2, 3, -1, 3, -2], 1)
+hello << note_map.scale(mynote, pattern, doublestop=-8).join(" ")
+chromatic_pattern = [1] * 12
+pattern = hey(chromatic_pattern)
+hello << note_map.scale(mynote, pattern, doublestop=-8).join(" ")
+chromatic_pattern = [1] * 12
+pattern = hey(chromatic_pattern)
+hello << note_map.scale(mynote+"'", pattern, doublestop=-8).join(" ")
+pattern = hey([4, -2, 3, -1, 3, -2, 4, -2, 4, -2, 3, -1, 3, -2, 2], 0)
+hello << note_map.scale(mynote, pattern, doublestop=12).join(" ")
+pattern = hey([4, -2, 3, -1, 3, -2, 4, -2, 4, -2, 3, -1, 3, -2], 1)
+hello << note_map.scale(mynote, pattern, doublestop=12).join(" ")
+chromatic_pattern = [1] * 12
+pattern = hey(chromatic_pattern)
+hello << note_map.scale(mynote, pattern, doublestop=12).join(" ")
+chromatic_pattern = [1] * 12
+pattern = hey(chromatic_pattern)
+hello << note_map.scale(mynote+"'", pattern, doublestop=12).join(" ")
+[12, -8, 4].each do |mydoublestop|
+chromatic_pattern = [1] * 12
+
+major_pattern = hey([2,2,1,2,2,2,1], 1)
+hello << note_map.scale(mynote, major_pattern, doublestop=mydoublestop).join(" ")
+pattern = hey([3,4, 5], 1)
+hello << note_map.scale(mynote, pattern, doublestop=mydoublestop).join(" ")
+pattern = hey([4,3, 5], 1)
+hello << note_map.scale(mynote, pattern, doublestop=mydoublestop).join(" ")
+pattern = hey([4,5, 3], 1)
+hello << note_map.scale(mynote, pattern, doublestop=mydoublestop).join(" ")
+pattern = hey([5,4, 3], 1)
+hello << note_map.scale(mynote, pattern, doublestop=mydoublestop).join(" ")
+pattern = hey([5, 3, 4], 1)
+hello << note_map.scale(mynote, pattern, doublestop=mydoublestop).join(" ")
+pattern = hey([3, 3, 3, 3], 1)
+hello << note_map.scale(mynote, pattern, doublestop=mydoublestop).join(" ")
+pattern = hey([4, 3, 3, 2], 1)
+hello << note_map.scale(mynote, pattern, doublestop=mydoublestop).join(" ")
+pattern = hi([2,2,1,2,2,2,1, 2], 0)
+hello << note_map.scale(mynote, pattern, doublestop=mydoublestop).join(" ")
+pattern = hi([4, 1,2,2,2,1, 2, 2, 1], 0)
+hello << note_map.scale(mynote, pattern, doublestop=mydoublestop).join(" ")
+pattern = hi([7, 2,2,1, 2,2,1, 2, 2], 0)
+hello << note_map.scale(mynote, pattern, doublestop=mydoublestop).join(" ")
+pattern = hi([11, 1, 2,2,1,2,2,2, 1], 0)
+hello << note_map.scale(mynote, pattern, doublestop=mydoublestop).join(" ")
+pattern = hi([9,2,1, 2,2,1,2,2, 2], 0)
+hello << note_map.scale(mynote, pattern, doublestop=mydoublestop).join(" ")
+pattern = hi([7,2,2,1, 2,2,1,2], 0)
+hello << note_map.scale(mynote, pattern, doublestop=mydoublestop).join(" ")
+pattern = hey([5,2,2,2,1, 2,2,1], 0)
+hello << note_map.scale(mynote, pattern, doublestop=mydoublestop).join(" ")
+pattern = hey([4,1,2,2,2,1, 2, 2], 0)
+hello << note_map.scale(mynote, pattern, doublestop=mydoublestop).join(" ")
+end
+
 
 score="
 \\version \"2.24.3\"
