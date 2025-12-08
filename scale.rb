@@ -24,9 +24,9 @@ class NoteMap
 
 
 
-    add_chord_harmonics
-    add_artificial_harmonics
-    add_natural_harmonics
+    #add_chord_harmonics
+    #add_artificial_harmonics
+    #add_natural_harmonics
     build_reverse_map
 
 
@@ -149,7 +149,7 @@ class NoteMap
       result << (@reverse_map[current] || current.to_s)
     end
     #p result
-    result << "\\break"
+    result << "\\break "
 
     #p result
     result
@@ -158,26 +158,49 @@ end
 
 # --- Example usage ---
 note_map = NoteMap.new
+def hey(x)
+  x.reverse.each do |y|
+    x << -(y)
+  end
+  x
 
-major_pattern = [2,2,1,2,2,2,1]
+end
+
+
+
 chromatic_pattern = [1] * 12
 
 #puts "C major scale:"
 hello =""
-puts note_map.scale("c''", major_pattern).join(" ")
-hello << note_map.scale("c''", major_pattern).join(" ")
-puts note_map.scale("d''", chromatic_pattern).join(" ")
-hello << note_map.scale("d''", chromatic_pattern).join(" ")
+firstnote="c'"
+[firstnote, (firstnote+"'"), (firstnote+"''")].each do |mynote|
+major_pattern = hey([2,2,1,2,2,2,1])
+hello << note_map.scale(mynote, major_pattern).join(" ")
+pattern = hey([3,4, 5])
+hello << note_map.scale(mynote, pattern).join(" ")
+pattern = hey([4,3, 5])
+hello << note_map.scale(mynote, pattern).join(" ")
+pattern = hey([4,5, 3])
+hello << note_map.scale(mynote, pattern).join(" ")
+pattern = hey([5,4, 3])
+hello << note_map.scale(mynote, pattern).join(" ")
+pattern = hey([5, 3, 4])
+hello << note_map.scale(mynote, pattern).join(" ")
+pattern = hey([3, 3, 3, 3])
+hello << note_map.scale(mynote, pattern).join(" ")
+pattern = hey([4, 3, 3, 2])
+hello << note_map.scale(mynote, pattern).join(" ")
+pattern = hey([4, -2, 3, -1, 3, -2, 4, -2, 4, -2, 3])
+hello << note_map.scale(mynote, pattern).join(" ")
 
+hello << note_map.scale(mynote, chromatic_pattern).join(" ")
+end
 
-#puts "Chromatic scale from g':"
-puts note_map.scale("g''", chromatic_pattern).join(" ")
-hello << note_map.scale("g''", chromatic_pattern).join(" ")
 score="
 \\version \"2.24.3\"
 
 \\header {
-  title = \"violin scales\"
+  title = \"#{firstnote} violin scale\"
 }
 
 global = {
@@ -201,7 +224,7 @@ violin = \\absolute  {
   }
 }
 "
-File.write("new_score.ly", score)
+File.write("new_scale.ly", score)
 
 #puts "Transpose example:"
 puts note_map.transpose(["g'", "c''8\\harmonic", "<e'' a''\\harmonic>."], 2).join(" ")
