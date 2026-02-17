@@ -1,5 +1,6 @@
 # hello scale for violin
 
+![alt text](scale4.png)
 ![alt text](notes1.png)
 ![alt text](scale1.png)
 ![alt text](scale2.png)

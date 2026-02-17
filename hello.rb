@@ -74,12 +74,12 @@ class NoteMap
     @map["a''8\\harmonic"] = @map["e''''"]
 
     @map["e'8^\\harmonic"] = @map["b''"]
-    @map["b'8^\\harmonic"] = @map["fis''"]
+    @map["b'8^\\harmonic"] = @map["fis'''"]
 
-    @map["fis''8^\\harmonic"] = @map["des'''"]
-    @map["fis''8^\\harmonic"] = @map["cis'''"]
-    @map["ges''8^\\harmonic"] = @map["des'''"]
-    @map["ges''8^\\harmonic"] = @map["cis'''"]
+    @map["fis''8^\\harmonic"] = @map["des''''"]
+    @map["fis''8^\\harmonic"] = @map["cis''''"]
+    @map["ges''8^\\harmonic"] = @map["des''''"]
+    @map["ges''8^\\harmonic"] = @map["cis''''"]
 
 
     @map["cis'''8^\\harmonic"] = @map["gis''''"]
@@ -98,29 +98,36 @@ class NoteMap
     fundamentals = @map.keys
     p "fundamentals", fundamentals
     touched_notes = fundamentals.dup
+    @myarray=[]
   
     fundamentals.each do |fund|
-      INTERVAL_RULES.keys.reverse.each do |myinterval|
-        touched_notes.reverse.each do |touch|
+        touched_notes.each do |touch|
 
           f_val = @map[fund]
           t_val = @map[touch]
           next unless f_val && t_val
   
           interval = t_val - f_val
-          if INTERVAL_RULES[interval] and interval == myinterval
+          if INTERVAL_RULES[interval]
             sounding_val = f_val + INTERVAL_RULES[interval]
 
             sounding_note = @reverse_map[sounding_val]
             token = "<#{fund} #{touch}\\harmonic>"
             #p "sounding val #{sounding_val} f_val #{f_val} t_val #{t_val} token #{token} => #{sounding_note}"
-            @map[token] = sounding_val
+            #@map[token] = sounding_val
+            @myarray.push({"interval" => interval, "token" => token, "val" => sounding_val})
             # Optional: print what was added
             #puts "#{token} => #{sounding_note}"
           end
         end
+    end
+    INTERVAL_RULES.keys.reverse.each do |y|
+      @myarray.select {|g|g["interval"] == y}.each do |x|
+         @map[x["token"]] = x["val"]
+           
       end
     end
+
   end
 
 
